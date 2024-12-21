@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>社交媒体用户情绪分析前端</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+
+   .form-container {
+      width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      background-color: white;
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input,
+    select,
+    button {
+      width: 100%;
+      padding: 5px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-top: 15px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+
+  </style>
+</head>
+<body>
+    <h1>选择模型和输入参数</h1>
+    <form action="/tune" method="post">
+        <label for="model">选择模型：</label>
+        <select id="model" name="model">
+            <option value="model1">模型1</option>
+            <option value="model2">模型2</option>
+            <!-- 可以根据实际模型添加更多选项 -->
+        </select>
+        <br>
+        <label for="param1">参数1：</label>
+        <input type="text" id="param1" name="param1">
+        <br>
+        <label for="param2">参数2：</label>
+        <input type="text" id="param2" name="param2">
+        <!-- 可以根据模型需要添加更多参数输入框 -->
+        <br>
+        <input type="submit" value="调参">
+    </form>
+</body>
+<body>
+  <h1>社交媒体用户情绪分析</h1>
+  <div class="form-container">
+    <label for="age">年龄：</label><input type="number" id="age"><br>
+    <label for="gender">性别：</label><select id="gender">
+      <option value="Female">Female</option>
+      <option value="Male">Male</option>
+      <option value="Non-binary">Non-binary</option>
+    </select><br>
+    <label for="platform">平台：</label><select id="platform">
+      <option value="Snapchat">Snapchat</option>
+      <option value="Telegram">Telegram</option>
+      <option value="Facebook">Facebook</option>
+      <option value="Instagram">Instagram</option>
+      <option value="Twitter">Twitter</option>
+      <option value="LinkedIn">LinkedIn</option>
+      <option value="Whatsapp">Whatsapp</option>
+    </select><br>
+    <label for="usage-time">每日使用时间（分钟）：</label><input type="number" id="usage-time"><br>
+    <label for="posts-per-day">每日发布帖子数：</label><input type="number" id="posts-per-day"><br>
+    <label for="likes-per-day">每日收到点赞数：</label><input type="number" id="likes-per-day"><br>
+    <label for="comments-per-day">每日收到评论数：</label><input type="number" id="comments-per-day"><br>
+    <label for="messages-per-day">每日发送消息数：</label><input type="number" id="messages-per-day"><br>
+    <button onclick="predictEmotion()">预测情绪</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    async function predictEmotion() {
+      const age = document.getElementById('age').value;
+      const gender = document.getElementById('gender').value;
+      const platform = document.getElementById('platform').value;
+      const usageTime = document.getElementById('usage-time').value;
+      const postsPerDay = document.getElementById('posts-per-day').value;
+      const likesPerDay = document.getElementById('likes-per-day').value;
+      const commentsPerDay = document.getElementById('comments-per-day').value;
+      const messagesPerDay = document.getElementById('messages-per-day').value;
+
+      const userData = {
+        'Age': age,
+        'Gender': gender,
+        'Platform': platform,
+        'Daily_Usage_Time (minutes)': usageTime,
+        'Posts_Per_Day': postsPerDay,
+        'Likes_Received_Per_Day': likesPerDay,
+        'Comments_Received_Per_Day': commentsPerDay,
+        'Messages_Sent_Per_Day': messagesPerDay
+      };
+
+
+      // 将userData和userInput整合到一个对象中
+      const combinedData = {
+        userData: userData,
+
+      };
+
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var responseData = JSON.parse(this.responseText);
+          document.getElementById('result').innerHTML = responseData.message;
+        }
+      };
+      // 构造POST请求，将整合后的数据发送到后端
+      xhr.open('POST', 'http://localhost:5000/api/submit', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(JSON.stringify(combinedData));
+    }
+  </script>
+</body>
+
+</html>
